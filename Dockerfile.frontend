@@ -1,0 +1,18 @@
+FROM node:24-slim
+
+# Update and install security patches
+RUN apt-get update && apt-get upgrade -y && apt-get clean
+
+# Set working directory
+WORKDIR /app
+
+# Copy package.json/package-lock.json/files and install npm
+COPY frontend/package.json frontend/package-lock.json ./
+RUN npm ci
+
+COPY frontend/ .
+
+# Port 5173
+EXPOSE 5173
+# Run the React app on port 5173
+CMD ["npm", "run", "dev"]
