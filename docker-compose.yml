@@ -11,6 +11,7 @@ services:
     environment:
       - PYTHONUNBUFFERED=1
       - DATABASE_URL=postgresql://admin:admin@db:5432/tabsandtutorialsdb
+      - LAST_FM_API_KEY=11db4fff8f16334c59b6739f37c1385d
     depends_on:
       - db
     command: ["/wait-for-it.sh", "db:5432", "--", "uvicorn", "main:app", "--host", "0.0.0.0", "--port", "8000"]
