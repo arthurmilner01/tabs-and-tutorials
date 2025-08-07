@@ -39,7 +39,10 @@ function App() {
 
   return (
     <div>
-      <h1>Tabs & Tutorials</h1>
+      <h1 
+      className="text-sm font-bold text-center mb-4">
+        Tabs & Tutorials
+      </h1>
 
       <input
         value={query}
