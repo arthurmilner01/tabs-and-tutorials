@@ -24,7 +24,7 @@ function ArtistCard({ artist }) {
         <a
         href={`http://localhost:5173/${encodeURIComponent(artist.name)}`}
         rel="noreferrer"
-        className="text-lg font-medium text-white max-w-sm
+        className="text-xl font-medium text-white max-w-sm
         hover:underline text-ellipsis overflow-hidden whitespace-nowrap"
         >
           {artist.name}

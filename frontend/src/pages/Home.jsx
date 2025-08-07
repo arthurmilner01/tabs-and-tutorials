@@ -9,6 +9,15 @@ function Home() {
   const [results, setResults] = useState(null); // State to hold the search results
   const [searchError, setSearchError] = useState(null); // State to hold any search errors
   const [isLoading, setIsLoading] = useState(false); // State to indicate if the search is in progress
+  const [filter, setFilter] = useState(""); // State to hold the search filter
+
+  const clearSearch = () => {
+    setQuery("");
+    setResults(null);
+    setSearchError(null);
+    setIsLoading(false);
+    setFilter("");
+  };
 
   const handleSearch = async () => {
     if (!query.trim()) {
@@ -30,7 +39,6 @@ function Home() {
         artists: artistData,
         songs: songsData,
       };
-      // Setting the results to display the song and artist information
       setResults(searchData);
       // Clear any previous search errors
       setSearchError(null);
@@ -47,41 +55,68 @@ function Home() {
   return (
     <div>
         <div className="flex flex-col items-center justify-center gap-8 mb-20 mt-40">
+          <div className="flex flex-row items-center justify-center gap-4 w-full">
             <input
             className="border border-purple-300 
-            rounded px-8 py-4 w-full max-w-3xl
+            rounded px-8 py-4 md:w-4/5 w-3/5 max-w-3xl
             text-dark"
             value={query}
             onChange={(e) => setQuery(e.target.value)}
             onKeyDown={(e) => {
-                if (e.key === 'Enter') {
-                handleSearch();
-                }
+              if (e.key === 'Enter') {
+              handleSearch();
+              }
             }}
             placeholder="Enter song/artist name..."
             />
 
+            <select
+            className="border border-purple-300 
+            rounded px-8 py-4 md:w-1/5 w-2/5 max-w-3xl
+            text-dark"
+            value={filter}
+            onChange={(e) => setFilter(e.target.value)}
+            >
+                <option value="">All</option>
+                <option value="songs">Songs</option>
+                <option value="artists">Artists</option>
+            </select>
+          </div>
+          
+          <div className="flex flex-col items-center justify-center gap-4 w-full">
             <button 
             className="bg-purple-700 text-white 
             px-8 py-4 rounded-xl
-            text-lg"
+            text-lg hover:bg-purple-800"
             onClick={handleSearch}
             disabled={isLoading}>
                 Search
             </button>
+            <button 
+            className="text-white
+            text-lg text-muted-500 
+            hover:text-purple-700"
+            onClick={clearSearch}
+            >
+                Clear Search
+            </button>
+          </div>
 
             {searchError && <p className="text-red-500 text-center">{searchError}</p>}
+
+            {isLoading && 
+            <div className="flex justify-center items-center">
+                <div className="w-16 h-16 border-4 border-purple-500 border-dashed rounded-full animate-spin"></div>
+            </div>
+            }
         </div>
 
-    <div className="flex flex-col md:flex-row items-start justify-evenly gap-12">
-        {isLoading && 
-        <div className="flex justify-center items-center">
-            <div className="w-8 h-8 border-4 border-purple-500 border-dashed rounded-full animate-spin"></div>
-        </div>}
-
+    <div className="flex flex-col md:flex-row items-start justify-center gap-4">
         {/* If results are available and not loading, display the results, otherwise hides the content */}
         {!isLoading && results && (
             <>
+            {/* If filter is empty or set to songs, display songs section */}
+            {(filter === "" || filter === "songs") && (
             <div className="flex flex-col items-center w-full">
             {/* Display the returned songs from search query, if no songs found display no songs found */}
                 <h1 className="text-white text-2xl font-bold mb-10">
@@ -97,10 +132,13 @@ function Home() {
                     ))}
                 </ul>
                 ) : (
-                results && <p>No songs found.</p>
+                results && <p className="text-white">No songs found.</p>
                 )}
             </div>
+            )}
 
+            {/* If filter is empty or set to artists, display artists section */}
+            {(filter === "" || filter === "artists") && (
             <div className="flex flex-col items-center w-full">
             {/* Display the returned artists from search query, if no artists found display no artists found */}
             <h1 className="text-white text-2xl font-bold mb-10">
@@ -116,9 +154,10 @@ function Home() {
                 ))}
             </ul>
             ) : (
-            results && <p>No artists found.</p>
+            results && <p className="text-white">No artists found.</p>
             )}
             </div>
+            )}
             </>
         )}
         </div>

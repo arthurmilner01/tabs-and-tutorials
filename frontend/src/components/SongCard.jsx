@@ -15,7 +15,7 @@ function SongCard({ song }) {
       <img
         src={albumImageUrl}
         alt={`${song.album.name}'s album cover`}
-        className="w-16 h-16 rounded mr-4"
+        className="w-16 h-16 mr-4"
       />
 
       <div className="flex flex-col">
