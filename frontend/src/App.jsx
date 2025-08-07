@@ -3,6 +3,7 @@ import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import AppNavbar from './components/AppNavbar.jsx'
 import Footer from './components/Footer.jsx'
 import Home from './pages/Home.jsx'
+import Artist from './pages/Artist.jsx'
 
 function App() {
   return (
@@ -14,6 +15,7 @@ function App() {
         <div className="mx-auto p-4 min-h-[100vh]">
           <Routes>
             <Route path="/" element={<Home />} />
+            <Route path="/artist/:artistID" element={<Artist />} />
           </Routes>
         </div>
         <Footer />

@@ -92,3 +92,21 @@ async def search_for_songs(song: str = Query(..., description="Song name to sear
         raise HTTPException(status_code=500, detail="Error fetching from Spotify API")
 
     return response.json()
+
+# Get artist details by ID using Spotify API
+@app.get("/spotify/artists/{artistID}")
+async def get_artist_by_id(artistID: str):
+    # Calling function to get spotify access token for authorization
+    access_token = await get_spotify_access_token()
+
+    # Have to send auth header for API access with generated access token
+    headers = {"Authorization": f"Bearer {access_token}"}
+
+    # Making the API call to spotify
+    async with httpx.AsyncClient() as client:
+        response = await client.get(f"https://api.spotify.com/v1/artists/{artistID}", headers=headers)
+    # Check if the response is successful and send appropriate error if not
+    if response.status_code != 200:
+        raise HTTPException(status_code=500, detail="Error fetching from Spotify API")
+
+    return response.json()

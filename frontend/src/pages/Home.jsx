@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import { searchForArtists, searchForSongs } from '../api'
+import { Search } from 'lucide-react';
 import SongCard from '../components/SongCard.jsx'
 import ArtistCard from '../components/ArtistCard.jsx';
 
@@ -87,10 +88,11 @@ function Home() {
             <button 
             className="bg-purple-700 text-white 
             px-8 py-4 rounded-xl
-            text-lg hover:bg-purple-800"
+            text-lg hover:bg-purple-800
+            flex items-center gap-2"
             onClick={handleSearch}
             disabled={isLoading}>
-                Search
+                <Search size={20}/> Search
             </button>
             <button 
             className="text-white

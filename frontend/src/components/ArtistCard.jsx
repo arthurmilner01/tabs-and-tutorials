@@ -1,3 +1,4 @@
+import { Link } from 'react-router-dom';
 import placeholderImage from '../assets/placeholder.jpg';
 
 
@@ -21,14 +22,13 @@ function ArtistCard({ artist }) {
       />
 
       <div className="flex flex-col">
-        <a
-        href={`http://localhost:5173/artist/${encodeURIComponent(artist.id)}`}
-        rel="noreferrer"
+        <Link
+        to={`/artist/${artist.id}`}
         className="text-xl font-medium text-white max-w-sm
         hover:underline text-ellipsis overflow-hidden whitespace-nowrap"
         >
           {artist.name}
-        </a>
+        </Link>
       </div>
     </div>
   );

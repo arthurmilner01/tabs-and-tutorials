@@ -11,3 +11,9 @@ export async function searchForSongs(song) {
     if (!res.ok) throw new Error("Failed to fetch songs.");
     return res.json();
 }
+
+export async function getArtistByID(artistID) {
+    const res = await fetch(`${backendUrl}/spotify/artists/${encodeURIComponent(artistID)}`);
+    if (!res.ok) throw new Error("Failed to fetch artist details.");
+    return res.json();
+}
