@@ -20,7 +20,7 @@ function SongCard({ song }) {
 
       <div className="flex flex-col">
         <a
-        href={`http://localhost:5173/${encodeURIComponent(song.name)}`}
+        href={`http://localhost:5173/song/${encodeURIComponent(song.id)}`}
         rel="noreferrer"
         className="text-lg font-medium max-w-sm
         text-white hover:underline
@@ -29,7 +29,7 @@ function SongCard({ song }) {
           {song.name}
         </a>
         <a
-        href={`http://localhost:5173/${encodeURIComponent(song.artists[0].name)}`}
+        href={`http://localhost:5173/artist/${encodeURIComponent(song.artists[0].id)}`}
         rel="noreferrer"
         className="text-sm text-gray-400 mt-1 max-w-sm
         text-ellipsis overflow-hidden whitespace-nowrap"

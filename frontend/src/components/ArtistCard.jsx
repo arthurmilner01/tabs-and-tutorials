@@ -22,7 +22,7 @@ function ArtistCard({ artist }) {
 
       <div className="flex flex-col">
         <a
-        href={`http://localhost:5173/${encodeURIComponent(artist.name)}`}
+        href={`http://localhost:5173/artist/${encodeURIComponent(artist.id)}`}
         rel="noreferrer"
         className="text-xl font-medium text-white max-w-sm
         hover:underline text-ellipsis overflow-hidden whitespace-nowrap"
