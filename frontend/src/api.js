@@ -17,3 +17,15 @@ export async function getArtistByID(artistID) {
     if (!res.ok) throw new Error("Failed to fetch artist details.");
     return res.json();
 }
+
+export async function getArtistSongsByID(artistID){
+    const res = await fetch(`${backendUrl}/spotify/artists/${encodeURIComponent(artistID)}/songs`);
+    if (!res.ok) throw new Error("Failed to fetch artist songs.");
+    return res.json();
+}
+
+export async function searchForArtistsSongs(artistName, songName) {
+    const res = await fetch(`${backendUrl}/spotify/artists/${encodeURIComponent(artistName)}/search_songs?song=${encodeURIComponent(songName)}`)
+    if (!res.ok) throw new Error("Failed to fetch artist's songs.");
+    return res.json();
+}

@@ -110,3 +110,49 @@ async def get_artist_by_id(artistID: str):
         raise HTTPException(status_code=500, detail="Error fetching from Spotify API")
 
     return response.json()
+
+# Get top songs of an artist by ID using Spotify API
+@app.get("/spotify/artists/{artistID}/songs")
+async def get_artist_songs(artistID: str):
+    # Calling function to get spotify access token for authorization
+    access_token = await get_spotify_access_token()
+
+    # Have to send auth header for API access with generated access token
+    headers = {"Authorization": f"Bearer {access_token}"}
+
+    # Making the API call to spotify
+    async with httpx.AsyncClient() as client:
+        response = await client.get(f"https://api.spotify.com/v1/artists/{artistID}/top-tracks?market=US", headers=headers)
+    # Check if the response is successful and send appropriate error if not
+    if response.status_code != 200:
+        raise HTTPException(status_code=500, detail="Error fetching from Spotify API")
+
+    return response.json()
+
+# Search for a song from a specific artist using Spotify API
+@app.get("/spotify/artists/{artistName}/search_songs")
+async def search_for_songs(
+    artistName: str,
+    song: str = Query(..., description="Song name to search with Spotify API.")
+):
+    # Calling function to get spotify access token for authorization
+    access_token = await get_spotify_access_token()
+
+    # Searching with song name filtered by artist ID
+    params = {
+        "q": f"artist:{artistName} track:{song}",
+        "type": "track",
+        # Limit the number of results to 20
+        "limit": 10
+    }
+    # Have to send auth header for API access with generated access token
+    headers = {"Authorization": f"Bearer {access_token}"}
+
+    # Making the API call to spotify
+    async with httpx.AsyncClient() as client:
+        response = await client.get("https://api.spotify.com/v1/search", params=params, headers=headers)
+    # Check if the response is successful and send appropriate error if not
+    if response.status_code != 200:
+        raise HTTPException(status_code=500, detail="Error fetching from Spotify API")
+    
+    return response.json()
