@@ -186,7 +186,7 @@ function Artist() {
 
         {songsError && <p className="text-red-500 text-center">{songsError}</p>}
 
-        {isSongsLoading &&
+        {(isSongsLoading || isSongSearchLoading) &&
             <div className="flex justify-center items-center">
                 <div className="w-16 h-16 border-4 border-purple-500 border-dashed rounded-full animate-spin"></div>
             </div>
