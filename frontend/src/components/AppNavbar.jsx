@@ -4,7 +4,7 @@ function AppNavbar() {
 
   return (
     <div className="flex flex-row justify-center text-white bg-transparent min-height-[10vh] max-height-[10vh]">
-      <a href="http://localhost:5173/">
+      <a href="http://localhost:3000/">
         <img
         src={navLogo}
         alt={`Tabs and Tutorials Logo`}

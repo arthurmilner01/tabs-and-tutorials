@@ -1,5 +1,7 @@
 from fastapi import FastAPI, HTTPException, Query
 from fastapi.middleware.cors import CORSMiddleware
+from utils.rate_limiter import SpotifyRateLimited
+from utils.redis_cache import checkRedisCache
 import os
 import httpx
 import base64
@@ -16,7 +18,7 @@ SPOTIFY_SECRET_KEY = os.getenv("SPOTIFY_SECRET_KEY")
 # Allows CORS for the frontend (react) to communicate with the backend (FastAPI)
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["http://localhost:5173"], # Allows react to access the API
+    allow_origins=["http://localhost:3000"], # Allows react to access the API
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
@@ -47,7 +49,17 @@ async def get_spotify_access_token():
 
 # Search for an artist using Spotify API
 @app.get("/spotify/search_artists")
+# Uses Spotify API so endpoint is rate limited
+@SpotifyRateLimited
+# Wrapper to check cache before adding to rate limiter or making API call
+# Kwargs acting as a safety net for any additional arguments which will not be used in cache key
+@checkRedisCache(
+    lambda artist, **kwargs: f"spotify:search_artists:{artist.lower().strip()}", 
+    expires=3600
+)
 async def search_for_artist(artist: str = Query(..., description="Artist name to search with Spotify API.")):
+    # Lower and strip to improve caching consistency
+    artist = artist.lower().strip()
     # Calling function to get spotify access token for authorization
     access_token = await get_spotify_access_token()
 
@@ -71,7 +83,18 @@ async def search_for_artist(artist: str = Query(..., description="Artist name to
 
 # Search for a song using Spotify API
 @app.get("/spotify/search_songs")
+# Uses Spotify API so endpoint is rate limited
+@SpotifyRateLimited
+# Wrapper to check cache before adding to rate limiter or making API call
+# Kwargs acting as a safety net for any additional arguments which will not be used in cache key
+@checkRedisCache(
+    lambda song, **kwargs: f"spotify:search_songs:{song.lower().strip()}", 
+    expires=3600
+)
 async def search_for_songs(song: str = Query(..., description="Song name to search with Spotify API.")):
+    # Lower case and strip song name to improve cache hit rate
+    song = song.lower().strip()
+    
     # Calling function to get spotify access token for authorization
     access_token = await get_spotify_access_token()
 
@@ -95,6 +118,14 @@ async def search_for_songs(song: str = Query(..., description="Song name to sear
 
 # Get artist details by ID using Spotify API
 @app.get("/spotify/artists/{artistID}")
+# Uses Spotify API so endpoint is rate limited
+@SpotifyRateLimited
+# Wrapper to check cache before adding to rate limiter or making API call
+# Kwargs acting as a safety net for any additional arguments which will not be used in cache key
+@checkRedisCache(
+    lambda artistID, **kwargs: f"spotify:artist_details:{artistID}", 
+    expires=3600
+)
 async def get_artist_by_id(artistID: str):
     # Calling function to get spotify access token for authorization
     access_token = await get_spotify_access_token()
@@ -113,6 +144,14 @@ async def get_artist_by_id(artistID: str):
 
 # Get top songs of an artist by ID using Spotify API
 @app.get("/spotify/artists/{artistID}/songs")
+# Uses Spotify API so endpoint is rate limited
+@SpotifyRateLimited
+# Wrapper to check cache before adding to rate limiter or making API call
+# Kwargs acting as a safety net for any additional arguments which will not be used in cache key
+@checkRedisCache(
+    lambda artistID, **kwargs: f"spotify:artist_top_songs:{artistID}", 
+    expires=3600
+)
 async def get_artist_songs(artistID: str):
     # Calling function to get spotify access token for authorization
     access_token = await get_spotify_access_token()
@@ -131,10 +170,21 @@ async def get_artist_songs(artistID: str):
 
 # Search for a song from a specific artist using Spotify API
 @app.get("/spotify/artists/{artistName}/search_songs")
+# Uses Spotify API so endpoint is rate limited
+@SpotifyRateLimited
+# Wrapper to check cache before adding to rate limiter or making API call
+# Kwargs acting as a safety net for any additional arguments which will not be used in cache key
+@checkRedisCache(
+    lambda artistName, song, **kwargs: f"spotify:artist_search_songs:{artistName}:{song.lower().strip()}", 
+    expires=3600
+)
 async def search_for_songs(
     artistName: str,
     song: str = Query(..., description="Song name to search with Spotify API.")
 ):
+    # Lowercase and strip to improve effectiveness of caching
+    # Not used on artist name because wont be input by user
+    song = song.lower().strip()
     # Calling function to get spotify access token for authorization
     access_token = await get_spotify_access_token()
 

@@ -12,7 +12,7 @@ RUN npm ci
 
 COPY frontend/ .
 
-# Port 5173
-EXPOSE 5173
-# Run the React app on port 5173
+# Port 3000
+EXPOSE 3000
+# Run the React app on port 3000
 CMD ["npm", "run", "dev"]
