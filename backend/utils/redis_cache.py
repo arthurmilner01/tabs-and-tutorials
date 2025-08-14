@@ -21,8 +21,32 @@ def checkRedisCache(cacheKeyFunc, expires: int = 3600):
             
             # If not cached, call the original function
             result = await func(*args, **kwargs)
+
             # Cache the result in Redis to reduce future API calls
             await redisClient.setex(cacheKey, expires, json.dumps(result))
+            return result
+        return wrapper
+    return decorator
+
+# Modified version of standard checking of redis cache
+# Accepts a string for cache key instead of func as 
+# dynamic key is not required
+# Used for spotify access token
+def checkRedisCacheStringKey(cacheKey: str, expires: int = 3400):
+    def decorator(func):
+        @wraps(func)
+        async def wrapper(*args, **kwargs):
+            # Check Redis first
+            cachedResult = await redisClient.get(cacheKey)
+            if cachedResult:
+                # Format into string
+                return cachedResult
+
+            # If nothing found in cache run standard function
+            result = await func(*args, **kwargs)
+
+            # Cache result of normal function in Redis to reduce future API calls
+            await redisClient.setex(cacheKey, expires, result)
             return result
         return wrapper
     return decorator

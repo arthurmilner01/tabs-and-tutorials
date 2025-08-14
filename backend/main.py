@@ -1,19 +1,26 @@
-from fastapi import FastAPI, HTTPException, Query
+from fastapi import FastAPI, HTTPException, Query, Request
 from fastapi.middleware.cors import CORSMiddleware
+import httpx
+from contextlib import asynccontextmanager
 from utils.rate_limiter import SpotifyRateLimited
 from utils.redis_cache import checkRedisCache
-import os
-import httpx
-import base64
+from utils.spotify_access_token import get_spotify_access_token
 from database import Base, engine
 from models import Songs
 
+# Creating a single instance of httpx client
+# More efficient than always creating a new instance
+# And makes it easier to manage the closing of clients
+@asynccontextmanager
+async def Lifespan(app: FastAPI):
+    # Global httpx instance with a timeout of 10 seconds
+    app.httpxClient = httpx.AsyncClient(timeout=10)
+    yield # Instance is created and usable
+    await app.httpxClient.aclose() # Close the instance on app shutdown
 
-app = FastAPI()
+app = FastAPI(lifespan=Lifespan)
 
-# API key from envirnoment variable
-SPOTIFY_CLIENT_KEY = os.getenv("SPOTIFY_CLIENT_KEY")
-SPOTIFY_SECRET_KEY = os.getenv("SPOTIFY_SECRET_KEY")
+
 
 # Allows CORS for the frontend (react) to communicate with the backend (FastAPI)
 app.add_middleware(
@@ -27,26 +34,6 @@ app.add_middleware(
 # Creating the database tables
 Base.metadata.create_all(bind=engine)
 
-# Gets access token to allow Spotify API calls
-async def get_spotify_access_token():
-    url = "https://accounts.spotify.com/api/token"
-    # Sending authorization header with base64 encoded client key and secret
-    auth_str = f"{SPOTIFY_CLIENT_KEY}:{SPOTIFY_SECRET_KEY}"
-    headers = {
-        "Authorization": "Basic " + base64.b64encode(auth_str.encode()).decode()
-    }
-
-    # Client credentials instead of user credentials as only need to access public data
-    data = {"grant_type": "client_credentials"}
-
-    async with httpx.AsyncClient() as client:
-        response = await client.post(url, data=data, headers=headers)
-    
-    if response.status_code != 200:
-        raise HTTPException(status_code=500, detail="Error fetching Spotify access token")
-
-    return response.json()["access_token"]
-
 # Search for an artist using Spotify API
 @app.get("/spotify/search_artists")
 # Uses Spotify API so endpoint is rate limited
@@ -57,11 +44,16 @@ async def get_spotify_access_token():
     lambda artist, **kwargs: f"spotify:search_artists:{artist.lower().strip()}", 
     expires=3600
 )
-async def search_for_artist(artist: str = Query(..., description="Artist name to search with Spotify API.")):
+async def search_for_artist(
+    request: Request,
+    artist: str = Query(..., description="Artist name to search with Spotify API.")
+    ):
+    client = request.app.httpxClient
+
     # Lower and strip to improve caching consistency
     artist = artist.lower().strip()
     # Calling function to get spotify access token for authorization
-    access_token = await get_spotify_access_token()
+    access_token = await get_spotify_access_token(client)
 
     params = {
         "q": artist,
@@ -73,8 +65,7 @@ async def search_for_artist(artist: str = Query(..., description="Artist name to
     headers = {"Authorization": f"Bearer {access_token}"}
 
     # Making the API call to spotify
-    async with httpx.AsyncClient() as client:
-        response = await client.get("https://api.spotify.com/v1/search", params=params, headers=headers)
+    response = await client.get("https://api.spotify.com/v1/search", params=params, headers=headers)
     # Check if the response is successful and send appropriate error if not
     if response.status_code != 200:
         raise HTTPException(status_code=500, detail="Error fetching from Spotify API")
@@ -91,12 +82,17 @@ async def search_for_artist(artist: str = Query(..., description="Artist name to
     lambda song, **kwargs: f"spotify:search_songs:{song.lower().strip()}", 
     expires=3600
 )
-async def search_for_songs(song: str = Query(..., description="Song name to search with Spotify API.")):
+async def search_for_songs(
+    request: Request,
+    song: str = Query(..., description="Song name to search with Spotify API.")
+    ):
+    client = request.app.httpxClient
+
     # Lower case and strip song name to improve cache hit rate
     song = song.lower().strip()
     
     # Calling function to get spotify access token for authorization
-    access_token = await get_spotify_access_token()
+    access_token = await get_spotify_access_token(client)
 
     params = {
         "q": song,
@@ -108,8 +104,7 @@ async def search_for_songs(song: str = Query(..., description="Song name to sear
     headers = {"Authorization": f"Bearer {access_token}"}
 
     # Making the API call to spotify
-    async with httpx.AsyncClient() as client:
-        response = await client.get("https://api.spotify.com/v1/search", params=params, headers=headers)
+    response = await client.get("https://api.spotify.com/v1/search", params=params, headers=headers)
     # Check if the response is successful and send appropriate error if not
     if response.status_code != 200:
         raise HTTPException(status_code=500, detail="Error fetching from Spotify API")
