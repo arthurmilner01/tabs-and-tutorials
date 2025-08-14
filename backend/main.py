@@ -121,16 +121,20 @@ async def search_for_songs(
     lambda artistID, **kwargs: f"spotify:artist_details:{artistID}", 
     expires=3600
 )
-async def get_artist_by_id(artistID: str):
+async def get_artist_by_id(
+    request: Request,
+    artistID: str
+    ):
+    client = request.app.httpxClient
+
     # Calling function to get spotify access token for authorization
-    access_token = await get_spotify_access_token()
+    access_token = await get_spotify_access_token(client)
 
     # Have to send auth header for API access with generated access token
     headers = {"Authorization": f"Bearer {access_token}"}
 
     # Making the API call to spotify
-    async with httpx.AsyncClient() as client:
-        response = await client.get(f"https://api.spotify.com/v1/artists/{artistID}", headers=headers)
+    response = await client.get(f"https://api.spotify.com/v1/artists/{artistID}", headers=headers)
     # Check if the response is successful and send appropriate error if not
     if response.status_code != 200:
         raise HTTPException(status_code=500, detail="Error fetching from Spotify API")
@@ -147,16 +151,19 @@ async def get_artist_by_id(artistID: str):
     lambda artistID, **kwargs: f"spotify:artist_top_songs:{artistID}", 
     expires=3600
 )
-async def get_artist_songs(artistID: str):
+async def get_artist_songs(
+    request: Request,
+    artistID: str):
+    client = request.app.httpxClient
+
     # Calling function to get spotify access token for authorization
-    access_token = await get_spotify_access_token()
+    access_token = await get_spotify_access_token(client)
 
     # Have to send auth header for API access with generated access token
     headers = {"Authorization": f"Bearer {access_token}"}
 
     # Making the API call to spotify
-    async with httpx.AsyncClient() as client:
-        response = await client.get(f"https://api.spotify.com/v1/artists/{artistID}/top-tracks?market=US", headers=headers)
+    response = await client.get(f"https://api.spotify.com/v1/artists/{artistID}/top-tracks?market=US", headers=headers)
     # Check if the response is successful and send appropriate error if not
     if response.status_code != 200:
         raise HTTPException(status_code=500, detail="Error fetching from Spotify API")
@@ -174,14 +181,17 @@ async def get_artist_songs(artistID: str):
     expires=3600
 )
 async def search_for_songs(
+    request: Request,
     artistName: str,
     song: str = Query(..., description="Song name to search with Spotify API.")
 ):
+    client = request.app.httpxClient
+    
     # Lowercase and strip to improve effectiveness of caching
     # Not used on artist name because wont be input by user
     song = song.lower().strip()
     # Calling function to get spotify access token for authorization
-    access_token = await get_spotify_access_token()
+    access_token = await get_spotify_access_token(client)
 
     # Searching with song name filtered by artist ID
     params = {
