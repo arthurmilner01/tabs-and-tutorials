@@ -36,14 +36,27 @@ class RateLimiter:
 
 # Making instance of RateLimiter to be used across all spotify endpoints
 spotifyRateLimiter = RateLimiter(8, 1.0)  # 8 calls per second
+# Making instance of RateLimiter to be used across all youtube endpoints
+# Youtube doesn't limit on time but will help prevent spam
+youtubeRateLimiter = RateLimiter(10, 1.0) # 10 calls per second
 
 # Rate limiting decorator function to limit the number of API calls per second
 # Will track API calls across all endpoints
 # Runs before the actual endpoint function
+# Spotify rate limiter
 def SpotifyRateLimited(func):
     @wraps(func)
     async def wrapper(*args, **kwargs):
         # Call the acquire method of RateLimiter
         await spotifyRateLimiter.acquire()
+        return await func(*args, **kwargs)
+    return wrapper
+
+# Youtube rate limiter
+def YoutubeRateLimited(func):
+    @wraps(func)
+    async def wrapper(*args, **kwargs):
+        # Call the acquire method of RateLimiter
+        await youtubeRateLimiter.acquire()
         return await func(*args, **kwargs)
     return wrapper

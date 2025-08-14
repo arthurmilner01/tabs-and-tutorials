@@ -4,6 +4,7 @@ import AppNavbar from './components/AppNavbar.jsx'
 import Footer from './components/Footer.jsx'
 import Home from './pages/Home.jsx'
 import Artist from './pages/Artist.jsx'
+import Song from './pages/Song.jsx'
 
 function App() {
   return (
@@ -16,6 +17,7 @@ function App() {
           <Routes>
             <Route path="/" element={<Home />} />
             <Route path="/artist/:artistID" element={<Artist />} />
+            <Route path="/song/:songID" element={<Song />} />
           </Routes>
         </div>
         <Footer />

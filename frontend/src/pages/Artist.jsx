@@ -167,7 +167,7 @@ function Artist() {
         )}
 
         <h1 className="text-2xl font-bold mb-4">
-                Artist's Songs
+            Artist's Songs
         </h1>
 
         <input
