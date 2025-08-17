@@ -13,7 +13,7 @@ function App() {
       <div className="min-h-screen
       bg-[conic-gradient(at_bottom_right,_var(--tw-gradient-stops))] from-[#000000] via-[#150050] to-[#3f0071]">
         <AppNavbar />
-        <div className="mx-auto p-4 min-h-[100vh]">
+        <div className="mx-auto min-h-[100vh]">
           <Routes>
             <Route path="/" element={<Home />} />
             <Route path="/artist/:artistID" element={<Artist />} />

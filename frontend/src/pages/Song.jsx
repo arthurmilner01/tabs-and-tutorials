@@ -48,8 +48,8 @@ function Song() {
             }
         }
 
-    fetchTutorials();
-}, [song]);
+        fetchTutorials();
+    }, [song]);
 
     // Converts the spotify ms duration to minutes and seconds
     function formatDuration(ms) {
@@ -75,81 +75,83 @@ function Song() {
         {/* If song data is loaded, display the song details */}
         {!isSongLoading && !songError && song && (
         <>
-            <div className="relative w-full min-h-[500px] max-h-[500px] overflow-hidden
-            flex items-center justify-center">
-                {/* Song image as banner background, only display if real image found */}
-                {songImageUrl !== placeholderImage && (
-                    <img
-                    src={songImageUrl}
-                    alt="Background image of the song art"
-                    className="absolute inset-0 w-full 
-                    h-full object-cover opacity-30 z-0"
-                    />
-                )}
+        <div className="relative w-full min-h-[500px] 
+        max-h-[500px] overflow-hidden
+        flex items-center justify-center">
+            {/* Song image as banner background, only display if real image found */}
+            {songImageUrl !== placeholderImage && (
+                <img
+                src={songImageUrl}
+                alt="Background image of the song art"
+                className="absolute inset-0 w-full 
+                h-full object-cover opacity-30 z-0"
+                />
+            )}
 
-                <div className="absolute inset-0 bg-black opacity-40 z-10" />
-                    <div className="relative z-20 flex flex-col 
-                    md:flex-row items-center text-center 
-                    md:text-start gap-4 md:gap-12">
-                    <img
-                    src={songImageUrl}
-                    alt={song.name}
-                    width={250}
-                    height={250}
-                    className="rounded-xl"
-                    />
-                    <div className="flex flex-col">
-                        {/* Display song details, checking they exist before rendering */}
-                        {song.name ?
-                            <h1 className="text-lg md:text-2xl 
-                            font-bold mb-4
-                            max-w-md">
-                                {song.name}
-                                {song.duration_ms && 
-                                <h1 className="text-sm md:text-lg 
-                                text-gray-400 mb-4
-                                max-w-md">
-                                    ({formatDuration(song.duration_ms)})
-                                </h1>}
-                            </h1>
-                            :
-                            <h1 className="text-lg md:text-2xl 
-                            font-bold mb-4
-                            max-w-md">
-                                NOT FOUND
-                            </h1>
-                        }
+            <div className="absolute inset-0 bg-black opacity-40 z-10" />
+            <div className="relative z-20 flex flex-col 
+            md:flex-row items-center text-center 
+            md:text-start gap-4 md:gap-12">
+                <img
+                src={songImageUrl}
+                alt={song.name}
+                width={250}
+                height={250}
+                className="rounded-xl"
+                />
 
-                        {song.album.name ?
-                            <h1 className="text-md md:text-xl 
-                            mb-4 italic
-                            max-w-md">
-                                From {song.album.name}
-                            </h1>
-                            :
-                            <h1 className="text-lg md:text-2xl 
+                <div className="flex flex-col">
+                    {/* Display song details, checking they exist before rendering */}
+                    {song.name ?
+                        <h1 className="text-lg md:text-2xl 
+                        font-bold mb-4
+                        max-w-md">
+                            {song.name}
+                            {song.duration_ms && 
+                            <h1 className="text-sm md:text-lg 
                             text-gray-400 mb-4
                             max-w-md">
-                                NOT FOUND
-                            </h1>
-                        }
+                                ({formatDuration(song.duration_ms)})
+                            </h1>}
+                        </h1>
+                        :
+                        <h1 className="text-lg md:text-2xl 
+                        font-bold mb-4
+                        max-w-md">
+                            NOT FOUND
+                        </h1>
+                    }
 
-                        {song.artists[0].name ?
-                            <h1 className="text-md md:text-xl 
-                            text-gray-400 mb-4 italic
-                            max-w-md">
-                                By {song.artists[0].name}
-                            </h1>
-                            :
-                            <h1 className="text-lg md:text-2xl 
-                            text-gray-400 mb-4
-                            max-w-md">
-                                NOT FOUND
-                            </h1>
-                        }
-                    </div>
+                    {song.album.name ?
+                        <h1 className="text-md md:text-xl 
+                        mb-4 italic
+                        max-w-md">
+                            From {song.album.name}
+                        </h1>
+                        :
+                        <h1 className="text-lg md:text-2xl 
+                        text-gray-400 mb-4
+                        max-w-md">
+                            NOT FOUND
+                        </h1>
+                    }
+
+                    {song.artists[0].name ?
+                        <h1 className="text-md md:text-xl 
+                        text-gray-400 mb-4 italic
+                        max-w-md">
+                            By {song.artists[0].name}
+                        </h1>
+                        :
+                        <h1 className="text-lg md:text-2xl 
+                        text-gray-400 mb-4
+                        max-w-md">
+                            NOT FOUND
+                        </h1>
+                    }
                 </div>
             </div>
+        </div>
         </>
         )}
 
@@ -172,7 +174,7 @@ function Song() {
         {/* If tutorials data has loaded, display the tutorials */}
         {!isTutorialsLoading && !tutorialsError && tutorials &&(
             tutorials.length > 0 ? (
-                <div className="grid w-full 2xl:w-5/6 grid-cols-1 md:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4 gap-6">
+                <div className="grid w-full 2xl:w-5/6 grid-cols-1 md:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4 p-4 gap-6">
                     {/* For each tutorial map tutorial details and embedded youtube video */}
                     {tutorials.map((video) => (
                         <TutorialCard key={video.id} video={video} />

@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { useParams } from 'react-router-dom';
 import { getArtistByID, getArtistSongsByID, searchForArtistsSongs } from '../api';
 import placeholderImage from '../assets/placeholder.jpg';
+import spotifyIcon from '../assets/spotify-icon.png';
 import SongCard from '../components/SongCard';
 
 function Artist() {
@@ -34,7 +35,7 @@ function Artist() {
                 setIsArtistLoading(false);
             }
         }
-
+        // Fetch artist top songs using artist ID and spotify API
         async function fetchArtistSongs() {
             try {
                 const songsData = await getArtistSongsByID(artistID);
@@ -103,23 +104,23 @@ function Artist() {
         {/* If artist data is loaded, display the artist details */}
         {!isArtistLoading && !artistError && artist && (
         <>
-            <div className="relative w-full min-h-[500px] max-h-[500px] overflow-hidden
-            flex items-center justify-center">
-                {/* Artist image as banner background, only display if real image found */}
-                {artistImageUrl !== placeholderImage && (
-                    <img
-                    src={artistImageUrl}
-                    alt="Background image of the artist"
-                    className="absolute inset-0 w-full 
-                    h-full object-cover opacity-30 z-0"
-                    />
-                )}
+        <div className="relative w-full min-h-[500px] max-h-[500px] overflow-hidden
+        flex items-center justify-center">
+            {/* Artist image as banner background, only display if real image found */}
+            {artistImageUrl !== placeholderImage && (
+                <img
+                src={artistImageUrl}
+                alt="Background image of the artist"
+                className="absolute inset-0 w-full 
+                h-full object-cover opacity-30 z-0"
+                />
+            )}
 
-                <div className="absolute inset-0 bg-black opacity-40 z-10" />
+            <div className="absolute inset-0 bg-black opacity-40 z-10" />
 
-                <div className="relative z-20 flex flex-col 
-                md:flex-row items-center text-center 
-                md:text-start gap-4 md:gap-12">
+            <div className="relative z-20 flex flex-col 
+            md:flex-row items-center text-center 
+            md:text-start gap-4 md:gap-12">
                 <img
                 src={artistImageUrl}
                 alt={artist.name}
@@ -148,21 +149,21 @@ function Artist() {
                         :
                         <p>GENRES: N/A</p>
                     }
-                    
-                    {artist.popularity ?
-                        <p>POPULARITY: {artist.popularity}</p>
-                        :
-                        <p>POPULARITY: N/A</p>
-                    }
 
                     {artist.followers && artist.followers.total ?
-                        <p>FOLLOWERS: {artist.followers.total.toLocaleString()}</p>
+                        <p className="flex flex-row items-center gap-2">
+                            <img src={spotifyIcon} alt="Spotify logo" className="w-5 h-5"/>
+                            FOLLOWERS: {artist.followers.total.toLocaleString()}
+                        </p>
                         :
-                        <p>FOLLOWERS: N/A</p>
+                        <p className="flex flex-row items-center gap-2">
+                            <img src={spotifyIcon} alt="Spotify logo" className="w-5 h-5"/>
+                            FOLLOWERS: N/A
+                        </p>
                     }
                 </div>
-                </div>
             </div>
+        </div>
         </>
         )}
 
@@ -172,7 +173,7 @@ function Artist() {
 
         <input
         className="border border-purple-300 
-        rounded px-8 py-4 md:w-4/5 w-3/5 max-w-3xl
+        rounded px-8 py-4 md:w-3/5 w-5/6 max-w-3xl
         text-black"
         value={songSearchQuery}
         onChange={(e) => setSongSearchQuery(e.target.value)}
@@ -181,7 +182,7 @@ function Artist() {
             handleSongSearch();
             }
         }}
-        placeholder="Enter artist's song name..."
+        placeholder="Song name..."
         />
 
         {songsError && <p className="text-red-500 text-center">{songsError}</p>}
@@ -196,7 +197,7 @@ function Artist() {
         {/* If song search query isn't null do not display the top tracks */}
         {!isSongsLoading && !songsError && artistSongs && !songSearchQuery &&(
             artistSongs?.tracks?.length > 0 ? (
-                <ul>
+                <ul className="md:w-2/3 w-5/6">
                     {/* For each song map song details and song's artist */}
                     {artistSongs.tracks.map((song) => (
                     <li key={song.id}>
@@ -212,7 +213,7 @@ function Artist() {
         {/* If song search results are available, display them */}
         {!isSongSearchLoading && !songSearchError && songSearchResults && (
             songSearchResults?.tracks?.items?.length > 0 ? (
-                <ul>
+                <ul className="md:w-2/3 w-5/6">
                     {/* For each song, map song details and song's artist */}
                     {songSearchResults.tracks.items.map((song) => (
                     <li key={song.id}>
@@ -224,9 +225,8 @@ function Artist() {
                 songSearchResults && <p className="text-white">Search returned no songs.</p>
             )
         )}
-
     </div>
-    );
+);
 }
 
 export default Artist

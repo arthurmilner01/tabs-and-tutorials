@@ -55,114 +55,114 @@ function Home() {
 
   return (
     <div>
-        <div className="flex flex-col items-center justify-center gap-8 mb-20 mt-40">
-          <div className="flex flex-row items-center justify-center gap-4 w-full">
-            <input
-            className="border border-purple-300 
-            rounded px-8 py-4 md:w-4/5 w-3/5 max-w-3xl
-            text-dark"
-            value={query}
-            onChange={(e) => setQuery(e.target.value)}
-            onKeyDown={(e) => {
-              if (e.key === 'Enter') {
-              handleSearch();
-              }
-            }}
-            placeholder="Enter song/artist name..."
-            />
-
-            <select
-            className="border border-purple-300 
-            rounded px-8 py-4 md:w-1/5 w-2/5 max-w-3xl
-            text-dark"
-            value={filter}
-            onChange={(e) => setFilter(e.target.value)}
-            >
-                <option value="">All</option>
-                <option value="songs">Songs</option>
-                <option value="artists">Artists</option>
-            </select>
-          </div>
-          
-          <div className="flex flex-col items-center justify-center gap-4 w-full">
-            <button 
-            className="bg-purple-700 text-white 
-            px-8 py-4 rounded-xl
-            text-lg hover:bg-purple-800
-            flex items-center gap-2"
-            onClick={handleSearch}
-            disabled={isLoading}>
-                <Search size={20}/> Search
-            </button>
-            <button 
-            className="text-white
-            text-lg text-muted-500 
-            hover:text-purple-700"
-            onClick={clearSearch}
-            >
-                Clear Search
-            </button>
-          </div>
-
-            {searchError && <p className="text-red-500 text-center">{searchError}</p>}
-
-            {isLoading && 
-            <div className="flex justify-center items-center">
-                <div className="w-16 h-16 border-4 border-purple-500 border-dashed rounded-full animate-spin"></div>
-            </div>
+      <div className="flex flex-col items-center justify-center p-4 gap-8 mb-20 mt-40">
+        <div className="flex flex-row items-center justify-center gap-4 w-full">
+          <input
+          className="border border-purple-300 
+          rounded px-8 py-4 md:w-4/5 w-3/5 max-w-3xl
+          text-dark"
+          value={query}
+          onChange={(e) => setQuery(e.target.value)}
+          onKeyDown={(e) => {
+            if (e.key === 'Enter') {
+            handleSearch();
             }
+          }}
+          placeholder="Enter song/artist name..."
+          />
+
+          <select
+          className="border border-purple-300 
+          rounded px-8 py-4 md:w-1/5 w-2/5 max-w-3xl
+          text-dark"
+          value={filter}
+          onChange={(e) => setFilter(e.target.value)}
+          >
+              <option value="">All</option>
+              <option value="songs">Songs</option>
+              <option value="artists">Artists</option>
+          </select>
+        </div>
+          
+        <div className="flex flex-col items-center justify-center gap-4 w-full">
+          <button 
+          className="bg-purple-700 text-white 
+          px-8 py-4 rounded-xl
+          text-lg hover:bg-purple-800
+          flex items-center gap-2"
+          onClick={handleSearch}
+          disabled={isLoading}>
+              <Search size={20}/> Search
+          </button>
+          <button 
+          className="text-white
+          text-lg text-muted-500 
+          hover:text-purple-700"
+          onClick={clearSearch}
+          >
+              Clear Search
+          </button>
         </div>
 
-    <div className="flex flex-col md:flex-row items-start justify-center gap-4">
+        {searchError && <p className="text-red-500 text-center">{searchError}</p>}
+
+        {isLoading && 
+          <div className="flex justify-center items-center">
+              <div className="w-16 h-16 border-4 border-purple-500 border-dashed rounded-full animate-spin"></div>
+          </div>
+        }
+      </div>
+
+      <div className="flex flex-col md:flex-row items-start justify-center w-full p-5 gap-4">
         {/* If results are available and not loading, display the results, otherwise hides the content */}
         {!isLoading && results && (
-            <>
-            {/* If filter is empty or set to songs, display songs section */}
-            {(filter === "" || filter === "songs") && (
-            <div className="flex flex-col items-center w-full">
-            {/* Display the returned songs from search query, if no songs found display no songs found */}
-                <h1 className="text-white text-2xl font-bold mb-10">
-                    Songs
-                </h1>
-                {results?.songs?.tracks?.items?.length > 0 ? (
-                <ul>
-                    {/* For each song map song details and song's artist */}
-                    {results.songs.tracks.items.map((song) => (
-                    <li key={song.id}>
-                        <SongCard song={song} />
-                    </li>
-                    ))}
-                </ul>
-                ) : (
-                results && <p className="text-white">No songs found.</p>
-                )}
+          <>
+          {/* If filter is empty or set to songs, display songs section */}
+          {(filter === "" || filter === "songs") && (
+            <div className="flex flex-col items-center w-full md:w-3/5">
+              {/* Display the returned songs from search query, if no songs found display no songs found */}
+              <h1 className="text-white text-2xl font-bold mb-10">
+                  Songs
+              </h1>
+              {results?.songs?.tracks?.items?.length > 0 ? (
+              <ul className="w-full">
+                  {/* For each song map song details and song's artist */}
+                  {results.songs.tracks.items.map((song) => (
+                  <li key={song.id}>
+                      <SongCard song={song} />
+                  </li>
+                  ))}
+              </ul>
+              ) : (
+              results && <p className="text-white">No songs found.</p>
+              )}
             </div>
-            )}
+          )}
 
-            {/* If filter is empty or set to artists, display artists section */}
-            {(filter === "" || filter === "artists") && (
-            <div className="flex flex-col items-center w-full">
-            {/* Display the returned artists from search query, if no artists found display no artists found */}
-            <h1 className="text-white text-2xl font-bold mb-10">
-                Artists
-            </h1>
-            {results?.artists?.artists?.items?.length > 0 ? (
-            <ul>
-                {/* For each artist map artist details */}
-                {results.artists.artists.items.map((artist) => (
-                <li key={artist.id}>
-                    <ArtistCard artist={artist} />
-                </li>
-                ))}
-            </ul>
-            ) : (
-            results && <p className="text-white">No artists found.</p>
-            )}
+          {/* If filter is empty or set to artists, display artists section */}
+          {(filter === "" || filter === "artists") && (
+            <div className="flex flex-col items-center w-full md:w-2/5">
+              {/* Display the returned artists from search query, if no artists found display no artists found */}
+              <h1 className="text-white text-2xl font-bold mb-10">
+                  Artists
+              </h1>
+              {results?.artists?.artists?.items?.length > 0 ? (
+              <ul className="w-full">
+                  {/* For each artist map artist details */}
+                  {results.artists.artists.items.map((artist) => (
+                  <li key={artist.id}>
+                      <ArtistCard artist={artist} />
+                  </li>
+                  ))}
+              </ul>
+              ) : (
+              results && <p className="text-white">No artists found.</p>
+              )}
             </div>
-            )}
-            </>
+          )}
+          </>
         )}
-        </div>
+      </div>
     </div>
   );
 }

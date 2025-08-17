@@ -13,7 +13,7 @@ function ArtistCard({ artist }) {
   //Displays card of artist name and image
   return (
     <div className="flex flex-row items-center 
-    p-4 mb-4 w-full max-w-lg min-w-lg
+    p-5 mb-5 w-full
     bg-white/10 backdrop-blur-md border border-white/20 rounded-xl">
       <img
         src={artistImageUrl}
@@ -21,11 +21,12 @@ function ArtistCard({ artist }) {
         className="w-16 h-16 rounded-full mr-4"
       />
 
-      <div className="flex flex-col">
+      <div className="flex flex-col flex-1 min-w-0">
         <Link
         to={`/artist/${artist.id}`}
         className="text-xl font-medium text-white max-w-sm
-        hover:underline text-ellipsis overflow-hidden whitespace-nowrap"
+        hover:underline truncate"
+        title={artist.name}
         >
           {artist.name}
         </Link>
