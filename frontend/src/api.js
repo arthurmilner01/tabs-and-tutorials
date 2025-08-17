@@ -19,6 +19,12 @@ export async function getArtistByID(artistID) {
     return res.json();
 }
 
+export async function getAlbumByID(albumID) {
+    const res = await fetch(`${backendUrl}/spotify/albums/${encodeURIComponent(albumID)}`);
+    if (!res.ok) throw new Error("Failed to fetch album details.");
+    return res.json();
+}
+
 export async function getSongByID(songID) {
     const res = await fetch(`${backendUrl}/spotify/songs/${encodeURIComponent(songID)}`)
     if (!res.ok) throw new Error("Failed to fetch song details.");

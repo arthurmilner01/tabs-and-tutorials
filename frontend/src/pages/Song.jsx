@@ -1,7 +1,8 @@
 import { useState, useEffect } from 'react';
-import { useParams } from 'react-router-dom';
+import { useParams, Link } from 'react-router-dom';
 import { getSongByID, searchTutorialVideos } from '../api';
 import placeholderImage from '../assets/albumplaceholder.png';
+import spotifyIcon from '../assets/spotify-icon.png';
 import TutorialCard from '../components/TutorialCard';
 
 function Song() {
@@ -108,11 +109,11 @@ function Song() {
                         max-w-md">
                             {song.name}
                             {song.duration_ms && 
-                            <h1 className="text-sm md:text-lg 
+                            <p className="text-sm md:text-lg 
                             text-gray-400 mb-4
                             max-w-md">
                                 ({formatDuration(song.duration_ms)})
-                            </h1>}
+                            </p>}
                         </h1>
                         :
                         <h1 className="text-lg md:text-2xl 
@@ -124,9 +125,24 @@ function Song() {
 
                     {song.album.name ?
                         <h1 className="text-md md:text-xl 
-                        mb-4 italic
-                        max-w-md">
-                            From {song.album.name}
+                        mb-4">
+                            From <Link to={`/album/${song.album.id}`} className="italic hover:underline">
+                                {song.album.name}
+                            </Link>
+                        </h1>
+                        :
+                        <h1 className="text-lg md:text-2xl 
+                        text-gray-400 mb-4">
+                            NOT FOUND
+                        </h1>
+                    }
+
+                    {song.artists[0].name ?
+                        <h1 className="text-md md:text-xl 
+                        text-gray-400 mb-4">
+                            By <Link to={`/artist/${song.artists[0].id}`} className="italic hover:underline">
+                                {song.artists[0].name}
+                            </Link>
                         </h1>
                         :
                         <h1 className="text-lg md:text-2xl 
@@ -136,19 +152,17 @@ function Song() {
                         </h1>
                     }
 
-                    {song.artists[0].name ?
-                        <h1 className="text-md md:text-xl 
-                        text-gray-400 mb-4 italic
-                        max-w-md">
-                            By {song.artists[0].name}
-                        </h1>
-                        :
-                        <h1 className="text-lg md:text-2xl 
-                        text-gray-400 mb-4
-                        max-w-md">
-                            NOT FOUND
-                        </h1>
-                    }
+                    {song.external_urls?.spotify && (
+                        <a
+                            href={song.external_urls.spotify}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="flex items-center gap-2 hover:underline"
+                        >
+                            <img src={spotifyIcon} alt="Spotify logo" className="w-5 h-5" />
+                            Listen on Spotify
+                        </a>
+                    )}
                 </div>
             </div>
         </div>

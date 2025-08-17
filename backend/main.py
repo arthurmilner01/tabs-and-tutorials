@@ -142,6 +142,36 @@ async def get_artist_by_id(
 
     return response.json()
 
+# Get album details by ID using Spotify API
+@app.get("/spotify/albums/{albumID}")
+# Uses Spotify API so endpoint is rate limited
+@SpotifyRateLimited
+# Wrapper to check cache before adding to rate limiter or making API call
+# Kwargs acting as a safety net for any additional arguments which will not be used in cache key
+@checkRedisCache(
+    lambda albumID, **kwargs: f"spotify:album_details:{albumID}", 
+    expires=3600
+)
+async def get_album_by_id(
+    request: Request,
+    albumID: str
+    ):
+    client = request.app.httpxClient
+
+    # Calling function to get spotify access token for authorization
+    access_token = await get_spotify_access_token(client)
+
+    # Have to send auth header for API access with generated access token
+    headers = {"Authorization": f"Bearer {access_token}"}
+
+    # Making the API call to spotify
+    response = await client.get(f"https://api.spotify.com/v1/albums/{albumID}", headers=headers)
+    # Check if the response is successful and send appropriate error if not
+    if response.status_code != 200:
+        raise HTTPException(status_code=500, detail="Error fetching album details from Spotify API")
+
+    return response.json()
+
 # Get song details by ID using Spotify API
 @app.get("/spotify/songs/{songID}")
 # Uses Spotify API so endpoint is rate limited
