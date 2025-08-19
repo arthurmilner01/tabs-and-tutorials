@@ -10,13 +10,18 @@ function TutorialCard({ video }) {
         flex flex-col items-start p-5
         bg-white/10 backdrop-blur-sm
         border border-white/20 rounded-xl">
-            <h2 className="
+            <a 
+            href={`https://www.youtube.com/embed/${videoId}`}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="
             text-white font-semibold mb-2
-            truncate w-full
+            truncate w-full hover:underline
             "
             title={title}>
                 {title}
-            </h2>
+            </a>
+
             <p className="
             text-gray-400 text-sm mb-2
             truncate w-full
@@ -24,6 +29,7 @@ function TutorialCard({ video }) {
             title={channelTitle}>
                 {channelTitle}
             </p>
+
             <p className="
             text-gray-300 text-sm mb-2
             truncate w-full
@@ -32,6 +38,7 @@ function TutorialCard({ video }) {
                 <br />
                 {Number(viewCount).toLocaleString()} views
             </p>
+            
             <div className="w-full aspect-video">
                 <iframe
                 width="100%"
