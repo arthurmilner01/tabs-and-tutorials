@@ -8,15 +8,8 @@ services:
       - "8000:8000"
     volumes:
       - ./backend:/app
-    environment:
-      - PYTHONUNBUFFERED=1
-      - DATABASE_URL=postgresql://admin:admin@db:5432/tabsandtutorialsdb
-      - SPOTIFY_CLIENT_KEY=***REMOVED***
-      - SPOTIFY_SECRET_KEY=***REMOVED***
-      - YOUTUBE_API_KEY=***REMOVED***
-      - GOOGLE_SEARCH_API_KEY=***REMOVED***
-      - GOOGLE_CUSTOM_SEARCH_ID=***REMOVED***
-      - REDIS_URL=redis://redis:6379
+    env_file:
+      - .env
     depends_on:
       - db
       - redis
