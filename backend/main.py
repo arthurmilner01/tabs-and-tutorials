@@ -3,7 +3,7 @@ from fastapi.middleware.cors import CORSMiddleware
 import httpx
 import os
 from contextlib import asynccontextmanager
-from utils.rate_limiter import SpotifyRateLimited, YoutubeRateLimited
+from utils.rate_limiter import SpotifyRateLimited, YoutubeRateLimited, GoogleSearchRateLimited
 from utils.redis_cache import checkRedisCache
 from utils.spotify_access_token import get_spotify_access_token
 from database import Base, engine
@@ -22,6 +22,10 @@ async def Lifespan(app: FastAPI):
 app = FastAPI(lifespan=Lifespan)
 
 YOUTUBE_API_KEY = os.getenv("YOUTUBE_API_KEY")
+GOOGLE_SEARCH_API_KEY = os.getenv("GOOGLE_SEARCH_API_KEY")
+# Using a custom google search which filters by the following sites:
+# Songsterr, Ultimate Guitar, GuitarTabs, AzChords
+GOOGLE_CUSTOM_SEARCH_ID = os.getenv("GOOGLE_CUSTOM_SEARCH_ID")
 
 # Allows CORS for the frontend (react) to communicate with the backend (FastAPI)
 app.add_middleware(
@@ -334,4 +338,36 @@ async def search_tutorial_videos(
         raise HTTPException(status_code=500, detail="Error fetching video details from YouTube API")
     
     return response.json()
+
+# Get information from the search results from popular guitar tab websites
+@app.get("/google/search_tabs/")
+# Uses Google Custom Search API
+@GoogleSearchRateLimited
+# Wrapper to check cache before adding to rate limiter or making API call
+# Kwargs acting as a safety net for any additional arguments which will not be used in cache key
+@checkRedisCache(
+    lambda query, **kwargs: f"google:search_tabs:{query} tab", 
+    expires=3600
+)
+async def search_tab_websites(
+    request: Request,
+    query: str):
+    client = request.app.httpxClient
+
+    url = "https://www.googleapis.com/customsearch/v1/"
+    params = {
+        "q": f"{query} tab",
+        "cx": f"{GOOGLE_CUSTOM_SEARCH_ID}",
+        "key": f"{GOOGLE_SEARCH_API_KEY}"
+    }
+
+    # Making the API call to google search API
+    response = await client.get(url, params=params)
+    # Check if the response is successful and send appropriate error if not
+    if response.status_code != 200:
+        raise HTTPException(status_code=500, detail="Error fetching search results")
+
+    return response.json()
+
+
 

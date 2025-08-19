@@ -1,9 +1,10 @@
 import { useState, useEffect } from 'react';
 import { useParams, Link } from 'react-router-dom';
-import { getSongByID, searchTutorialVideos } from '../api';
+import { getSongByID, searchTabWebsites, searchTutorialVideos } from '../api';
 import placeholderImage from '../assets/albumplaceholder.png';
 import spotifyIcon from '../assets/spotify-icon.png';
 import TutorialCard from '../components/TutorialCard';
+import TabResult from '../components/TabResult';
 
 function Song() {
     const { songID } = useParams();
@@ -15,6 +16,10 @@ function Song() {
     const [tutorials, setTutorials] = useState(null); // State to hold the youtube tutorial information
     const [isTutorialsLoading, setIsTutorialsLoading] = useState(true); // State to indicate loading status regaring tutorial details
     const [tutorialsError, setTutorialsError] = useState(null); // State to hold errors regarding youtube tutorials
+
+    const [tabs, setTabs] = useState(null); // State to hold the tab search information
+    const [isTabsLoading, setIsTabsLoading] = useState(true); // State to indicate loading status regaring tabs
+    const [tabsError, setTabsError] = useState(null); // State to hold errors regarding tab search
 
     useEffect(() => {
         // Fetch song details from Spotify API using the songID from the URL
@@ -37,6 +42,18 @@ function Song() {
     useEffect(() => {
         if (!song?.name || !song?.artists[0].name) return; // Only fetch if song has returned a name
 
+        async function fetchTabs() {
+            setIsTabsLoading(true);
+            try {
+                const tabs = await searchTabWebsites(`${song.name} ${song.artists[0].name}`);
+                setTabs(tabs.items);
+            } catch (err) {
+                setTabsError(err.message);
+            } finally {
+                setIsTabsLoading(false);
+            }
+        }
+
         async function fetchTutorials() {
             setIsTutorialsLoading(true);
             try {
@@ -49,6 +66,7 @@ function Song() {
             }
         }
 
+        fetchTabs();
         fetchTutorials();
     }, [song]);
 
@@ -167,6 +185,38 @@ function Song() {
             </div>
         </div>
         </>
+        )}
+
+        <h1 className="text-2xl font-bold text-center">
+            Guitar Tabs
+        </h1>
+
+        <p className="text-muted italic mb-4 text-center text-gray-400">
+            Please note tabs returned may not always be accurate.
+        </p>
+
+        {tabsError && <p className="text-red-500 text-center">{tabsError}</p>}
+
+        {(isTabsLoading) &&
+            <div className="flex justify-center items-center">
+                <div className="w-16 h-16 border-4 border-purple-500 border-dashed rounded-full animate-spin"></div>
+            </div>
+        }
+
+        {/* If tutorials data has loaded, display the tutorials */}
+        {!isTabsLoading && !tabsError && tabs &&(
+            tabs.length > 0 ? (
+                <ul className="md:w-2/3 w-5/6">
+                    {/* For each tutorial map tutorial details and embedded youtube video */}
+                    {tabs.map((result, index) => (
+                        <li key={index}>
+                            <TabResult result={result} />
+                        </li>
+                    ))}
+                </ul>
+            ) : (
+            tabs && <p className="text-white">No tabs found.</p>
+            )
         )}
 
         <h1 className="text-2xl font-bold text-center">

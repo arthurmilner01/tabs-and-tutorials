@@ -49,3 +49,10 @@ export async function searchTutorialVideos(searchQuery) {
     if (!res.ok) throw new Error("Failed to fetch youtube video tutorials.");
     return res.json();
 }
+
+// Google search API calls
+export async function searchTabWebsites(searchQuery) {
+    const res = await fetch(`${backendUrl}/google/search_tabs?query=${encodeURIComponent(searchQuery)}`)
+    if (!res.ok) throw new Error("Failed to search for guitar tabs.");
+    return res.json();
+}
