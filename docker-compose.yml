@@ -11,9 +11,8 @@ services:
     env_file:
       - .env
     depends_on:
-      - db
       - redis
-    command: ["/wait-for-it.sh", "db:5432", "--", "uvicorn", "main:app", "--host", "0.0.0.0", "--port", "8000"]
+    command: ["/wait-for-it.sh", "redis:6379", "--", "uvicorn", "main:app", "--host", "0.0.0.0", "--port", "8000"]
 
   frontend:
     platform: linux/amd64
@@ -27,19 +26,6 @@ services:
       - /app/node_modules
     stdin_open: true
     tty: true
-    depends_on:
-      - backend
-
-  db:
-    platform: linux/amd64
-    image: postgres:15
-    restart: always
-    environment:
-      POSTGRES_USER: admin
-      POSTGRES_PASSWORD: admin
-      POSTGRES_DB: tabsandtutorialsdb
-    volumes:
-      - postgres_data:/var/lib/postgresql/data
 
   redis:
     platform: linux/amd64
@@ -52,6 +38,4 @@ services:
     command: ["redis-server", "--save", "20", "1", "--loglevel", "warning"]
 
 volumes:
-  postgres_data:
   redis_data:
-

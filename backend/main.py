@@ -6,8 +6,6 @@ from contextlib import asynccontextmanager
 from utils.rate_limiter import SpotifyRateLimited, YoutubeRateLimited, GoogleSearchRateLimited
 from utils.redis_cache import checkRedisCache
 from utils.spotify_access_token import get_spotify_access_token
-from database import Base, engine
-from models import Songs
 
 # Creating a single instance of httpx client
 # More efficient than always creating a new instance
@@ -35,9 +33,6 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
-
-# Creating the database tables
-Base.metadata.create_all(bind=engine)
 
 # Search for an artist using Spotify API
 @app.get("/spotify/search_artists")
@@ -368,6 +363,3 @@ async def search_tab_websites(
         raise HTTPException(status_code=500, detail="Error fetching search results")
 
     return response.json()
-
-
-

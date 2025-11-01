@@ -10,7 +10,7 @@ RUN pip install --no-cache-dir -r requirements.txt
 COPY backend/ .
 
 COPY backend/wait-for-it.sh /wait-for-it.sh
-# Run wait-for-it script to ensure the database is ready before starting the app
+# Run wait-for-it script to ensure redis is ready before starting the app
 RUN chmod +x /wait-for-it.sh
 
 # Port 8000
